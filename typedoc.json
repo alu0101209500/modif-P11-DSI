@@ -1,5 +1,6 @@
 {
     "entryPoints":[
+        "./src/HTTPserv.ts"
     ],
     "out": "./docs"
 }
