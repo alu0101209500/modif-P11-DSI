@@ -15,6 +15,7 @@ app.get("/execmd", (req, res) => {
     } else {
         let args: string[] = [];
         let data: string = "";
+        let catchederror: string = "";
         if(req.query.args !== undefined){
             args = String(req.query.args).split(" ");
         }
@@ -22,13 +23,16 @@ app.get("/execmd", (req, res) => {
         comm.stdout.on("data", (chunk) => {
             data += chunk;
         });
+        comm.stderr.on("data", (chunk) => {
+            catchederror += chunk;
+        });
         comm.on("close", (code, _) => {
             if(Number(code) < 0){
                 res.send(JSON.stringify({type: "err", desc: "El comando no existe"}));
             } else if (Number(code) === 0){
                 res.send(JSON.stringify({type: "response", desc: data}));
             } else {
-                res.send(JSON.stringify({type: "err", desc: "Ha ocurrido un error durante la ejecución del comando"}));
+                res.send(JSON.stringify({type: "err", desc: catchederror}));
             }
         });
         comm.on("error", (err) => {
